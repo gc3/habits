@@ -56,9 +56,6 @@ api_token_file = ~/.local/state/habits/token
   not the token itself, so the secret can live outside a (possibly public)
   dotfiles repo. The file is just the raw token on one line:
 
-Both `storage_dir` and `api_token_file` expand a leading `~`. If
-`api_token_file` is set but unreadable, habits fails loudly rather than
-silently skipping sync.
-
 Get your Todoist API token from Todoist -> Settings -> Integrations ->
-Developer -> API token.
+Developer -> API token. If `api_token_file` is set but unreadable, habits fails
+loudly rather than silently skipping sync.
