@@ -54,6 +54,17 @@ def ensure_storage(storage_dir):
   os.makedirs(storage_dir, exist_ok=True)
   os.makedirs(os.path.join(storage_dir, ARCHIVED_STORAGE_DIR), exist_ok=True)
 
+def resolve_storage_dir(cfg):
+  """
+    the configured 'storage_dir' (with a leading ~ expanded) or the default.
+    does not create it -- call ensure_storage for that.
+  """
+  configured = cfg.get('storage_dir') if cfg else None
+  if configured:
+    return os.path.expanduser(configured)
+
+  return DEFAULT_STORAGE_DIR
+
 def load_api_token(cfg):
   """
     resolve the Todoist API token from the file named by 'api_token_file' in

@@ -27,9 +27,7 @@ def get_all_habit_names(include_archived=False):
     storage directly
   """
   cfg = config.parse_config()
-  storage_dir = config.DEFAULT_STORAGE_DIR
-  if cfg:
-    storage_dir = cfg.get('storage_dir', config.DEFAULT_STORAGE_DIR)
+  storage_dir = config.resolve_storage_dir(cfg)
 
   config.ensure_storage(storage_dir)
 
@@ -66,15 +64,10 @@ class HabitTracker:
 
     # load what we need from the config file or use defaults
     cfg = config.parse_config()
-    if cfg is not None:
-      self.api_token_ = cfg.get('api_token', None)
-      storage_dir = cfg.get('storage_dir', config.DEFAULT_STORAGE_DIR)
-
-    else:
-      self.api_token_ = None
-      storage_dir = config.DEFAULT_STORAGE_DIR
-
+    storage_dir = config.resolve_storage_dir(cfg)
     config.ensure_storage(storage_dir)
+
+    self.api_token_ = config.load_api_token(cfg)
     self.file_path_ = os.path.join(storage_dir, f"{self.name_}.csv")
     self.archive_path_ = os.path.join(
       storage_dir,
