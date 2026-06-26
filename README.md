@@ -7,13 +7,14 @@ The goal is let one use the same system on iOS, MacOS, and Linux by just
 putting tracking files in a cloud storage system.
 
 ## Installation
-```
+```sh
 git clone git@github.com:gc3/habits.git
 cd habits
 make install
 ```
 
 ## Usage
+```sh
 usage: habits [-h] [-c C | -n | -d | -r | -u | -l | -s | -a] [habit]
 
 positional arguments:
@@ -29,6 +30,7 @@ options:
   -l          [l]ist habits being tracked
   -s          show the [s]treaks / [s]tats of tracked habits
   -a          list [a]ll the habits including archived ones
+```
 
 ## Configuration
 Use ~/.habitsrc (or update CONFIG_FILE) to tell this library where to store its
