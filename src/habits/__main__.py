@@ -11,6 +11,7 @@
   store its data for habits and (optionally) the Todoist API Key to enable
   that integration.
 """
+# pylint: disable=too-many-branches
 
 import sys
 import argparse

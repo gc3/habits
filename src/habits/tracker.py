@@ -33,9 +33,10 @@ def _parse_config():
     return None
 
   config = configparser.ConfigParser(allow_unnamed_section=True)
-  config.read_file(open(config_path))
+  with open(config_path, encoding="utf-8") as f:
+    config.read_file(f)
 
-  # TODO -- error check the actual entries . like no / at path's end
+  # NOTE: this doesn't error check the actual entries . like no / at path's end
   return dict(config[configparser.UNNAMED_SECTION])
 
 def get_all_habit_names(include_archived=False):
@@ -106,7 +107,7 @@ class HabitTracker:
     for row in rows:
       assert row
       day = datetime.strptime(row[0], _DEFAULT_DATE_FMT).date()
-      if (day >= two_weeks_ago) and (day < date.today()):
+      if two_weeks_ago <= day < date.today():
         dedup[day] = True
 
     output += (

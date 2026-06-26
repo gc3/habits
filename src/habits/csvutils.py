@@ -49,11 +49,14 @@ class CSVEditor:
 
     return True
 
-  def create(self, header_row=DEFAULT_HEADER_ROW):
+  def create(self, header_row=None):
     """
       create the file for storage if it doesnt exist and return True, false
       otherwise
     """
+    if header_row is None:
+      header_row = DEFAULT_HEADER_ROW
+
     if not self.verify():
       self.append(header_row, add_date=False)
       return True
@@ -79,7 +82,7 @@ class CSVEditor:
       return self.rows_
 
     # load the file data from disk
-    with open(self.path_, newline="") as f:
+    with open(self.path_, newline="", encoding="utf-8") as f:
       reader = csv.reader(f)
 
       # skips the column titles in the first row and all blank rows
