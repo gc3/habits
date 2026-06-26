@@ -6,7 +6,6 @@
 """
 
 import os
-import configparser
 
 from calendar import Calendar
 from datetime import date, datetime, timedelta
@@ -17,42 +16,29 @@ except ImportError:
   HAS_TODOIST = False
 
 from habits import csvutils
+from habits import config
 
-CONFIG_FILE = "~/.habitsrc"
 _DEFAULT_COLUMNS = ['date', 'count']
 _DEFAULT_DATE_FMT = csvutils.DEFAULT_DATE_FMT
-_DEFAULT_STORAGE_DIR = "~/.habits/"
-_ARCHIVED_STORAGE_DIR = ".archive/"
-
-def _parse_config():
-  """
-    from the rc file load variables into a dictionary for the caller
-  """
-  config_path = os.path.expanduser(CONFIG_FILE)
-  if not os.path.exists(config_path):
-    return None
-
-  config = configparser.ConfigParser(allow_unnamed_section=True)
-  with open(config_path, encoding="utf-8") as f:
-    config.read_file(f)
-
-  # NOTE: this doesn't error check the actual entries . like no / at path's end
-  return dict(config[configparser.UNNAMED_SECTION])
 
 def get_all_habit_names(include_archived=False):
   """
     return a list of every habit being tracked by checking the habit
     storage directly
   """
-  config = _parse_config()
-  storage_dir = config.get('storage_dir', _DEFAULT_STORAGE_DIR)
+  cfg = config.parse_config()
+  storage_dir = config.DEFAULT_STORAGE_DIR
+  if cfg:
+    storage_dir = cfg.get('storage_dir', config.DEFAULT_STORAGE_DIR)
+
+  config.ensure_storage(storage_dir)
 
   names = os.listdir(storage_dir)
   curr = [os.path.splitext(f)[0] for f in names if f.lower().endswith(".csv")]
 
   arch = []
   if include_archived:
-    names = os.listdir(f"{storage_dir}{_ARCHIVED_STORAGE_DIR}")
+    names = os.listdir(os.path.join(storage_dir, config.ARCHIVED_STORAGE_DIR))
     arch = [os.path.splitext(f)[0] for f in names if f.lower().endswith(".csv")]
 
   return (curr, arch)
@@ -78,18 +64,23 @@ class HabitTracker:
     self.name_ = name
     self.task_id_ = task_id
 
-    # load what we need from the config file
-    config = _parse_config()
-    if config is not None:
-      self.api_token_ = config.get('api_token', None)
-      storage_dir = config.get('storage_dir', _DEFAULT_STORAGE_DIR)
+    # load what we need from the config file or use defaults
+    cfg = config.parse_config()
+    if cfg is not None:
+      self.api_token_ = cfg.get('api_token', None)
+      storage_dir = cfg.get('storage_dir', config.DEFAULT_STORAGE_DIR)
 
     else:
-      self.api_token = None
-      storage_dir = _DEFAULT_STORAGE_DIR
+      self.api_token_ = None
+      storage_dir = config.DEFAULT_STORAGE_DIR
 
-    self.file_path_ = storage_dir + f"{self.name_}.csv"
-    self.archive_path_ = f"{storage_dir}{_ARCHIVED_STORAGE_DIR}{self.name_}.csv"
+    config.ensure_storage(storage_dir)
+    self.file_path_ = os.path.join(storage_dir, f"{self.name_}.csv")
+    self.archive_path_ = os.path.join(
+      storage_dir,
+      config.ARCHIVED_STORAGE_DIR,
+      f"{self.name_}.csv"
+    )
 
     # set up the storage handling
     self.model_ = csvutils.CSVEditor(self.file_path_, _DEFAULT_DATE_FMT)

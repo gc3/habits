@@ -1,21 +1,17 @@
 # ----------- Main/CLI ---------------------------------------------------------
 """
-  DIY habit tracking using CSV files for storage and Todoist for recurring
-  task management.
-
-  The goal is let one use the same system on iOS, MacOS, and Windows by just
-  putting tracking files in a cloud storage system. While iOS can't share
-  this code, one can easily do the same operations in Shortcuts.
-
-  Use ~/.habitsrc (or update CONFIG_FILE) to tell this library where to
-  store its data for habits and (optionally) the Todoist API Key to enable
-  that integration.
+  Habit tracking CLI using CSV files for storage and Todoist for recurring task
+  management.
 """
 # pylint: disable=too-many-branches
 
 import sys
 import argparse
+import setproctitle
+
 from habits import tracker
+
+setproctitle.setproctitle("habits")
 
 def parse_cli():
   """
@@ -39,7 +35,7 @@ def parse_cli():
   ]
 
   # add the habit to work on if it's there
-  parser = argparse.ArgumentParser()
+  parser = argparse.ArgumentParser(prog = "habits", description = __doc__)
   parser.add_argument("habit", nargs='?')
 
   # add all the optional arguments
@@ -56,6 +52,7 @@ def parse_cli():
     parser.error("You must add the [habit] positional argument.")
 
   return parsed
+
 
 def main():
   """
@@ -138,6 +135,7 @@ def main():
   else:
     # give detailed info about a habit
     print(str(habit))
+
 
 if __name__ == "__main__":
   main()

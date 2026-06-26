@@ -22,6 +22,9 @@ lint:
 	mkdir -p build
 	pylint --output build/lint.log src/habits
 
+test: dist/habits
+	./test/smoke.sh
+
 clean:
 	rm -rf dist build __pycache__ src/habits/__pycache__ tags
 
