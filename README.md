@@ -33,5 +33,32 @@ options:
 ```
 
 ## Configuration
-Use ~/.habitsrc (or update CONFIG_FILE) to tell this library where to store its
-data for habits and (optionally) the Todoist API Key to enable that integration.
+
+Configuration is optional. With no config file, habits stores data under
+`$XDG_DATA_HOME/habits` (default `~/.local/share/habits`) and the Todoist
+integration stays off.
+
+To change defaults, create `$XDG_CONFIG_HOME/habits/habitsrc` (default
+`~/.config/habits/habitsrc`). It's a plain `key = value` file — no section
+header needed:
+
+```ini
+storage_dir = ~/Dropbox/habits
+api_token_file = ~/.local/state/habits/token
+```
+
+- **`storage_dir`** — where the per-habit CSV files live. An `.archive/`
+  subdirectory is created alongside them. Both are created automatically if
+  missing. Point this at a synced folder (Dropbox, iCloud Drive, etc.) to use
+  the same habits across iOS, macOS, and Linux.
+- **`api_token_file`** — path to a file containing your Todoist API token,
+  which enables the recurring-task integration. The config stores the *path*,
+  not the token itself, so the secret can live outside a (possibly public)
+  dotfiles repo. The file is just the raw token on one line:
+
+Both `storage_dir` and `api_token_file` expand a leading `~`. If
+`api_token_file` is set but unreadable, habits fails loudly rather than
+silently skipping sync.
+
+Get your Todoist API token from Todoist -> Settings -> Integrations ->
+Developer -> API token.
