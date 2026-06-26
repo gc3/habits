@@ -8,7 +8,7 @@ putting tracking files in a cloud storage system.
 
 ## Installation
 ```
-git clone ...habits.git
+git clone git@github.com:gc3/habits.git
 cd habits
 make install
 ```
