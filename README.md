@@ -59,3 +59,44 @@ api_token_file = ~/.local/state/habits/token
 Get your Todoist API token from Todoist -> Settings -> Integrations ->
 Developer -> API token. If `api_token_file` is set but unreadable, habits fails
 loudly rather than silently skipping sync.
+
+## Data Format
+
+Anything reading or writing the data — a shortcut, a script, the CLI — must
+follow this. It's the single source of compatibility between platforms.
+
+**Layout.** One CSV file per habit, named `<habit>.csv`, inside `storage_dir`
+(default `~/.local/share/habits`, i.e. `$XDG_DATA_HOME/habits`; overridable in
+the rc file). Archived habits move to `<storage_dir>/.archive/<habit>.csv`.
+
+**Header.** The first line is always the header and is skipped on read:
+
+```
+date,count
+```
+
+**Data rows.** One completion per line, appended in order:
+
+```
+2026-06-26 20:19,1
+2026-06-26 21:30,"1,2,3"
+```
+
+- **`date`** — local timestamp in `strftime` format `%Y-%m-%d %H:%M`
+  (year-month-day 24h hour:minute). Naive local time, no timezone or seconds.
+- **`count`** — the free-form value supplied at completion. It is *not*
+  validated as a number; any text is allowed. A value containing a comma must
+  be wrapped in double quotes per standard CSV rules (e.g. `"1,2,3"`), which is
+  what Python's `csv` writer emits.
+
+**Encoding & endings.** UTF-8, Unix `\n` line endings, one trailing newline per
+row. Blank lines are ignored on read.
+
+**Write semantics.** Logging a completion is a pure append — never rewrite or
+sort the file. (The CLI de-duplicates by day only when computing stats; on disk
+every append is kept.) Creating a brand-new habit means creating the file with
+the `date,count` header line, then appending rows.
+
+So a shortcut that "completes" a habit just needs to append one line of
+`<now as %Y-%m-%d %H:%M>,<value>` to the right `<habit>.csv`, quoting the value
+if it contains a comma.
