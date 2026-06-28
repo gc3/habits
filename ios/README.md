@@ -11,7 +11,7 @@ stay interchangeable across devices.
 | File | Role |
 | --- | --- |
 | `Habits_Habit_Reader.shortcut` | Reads a habit's CSV and shows its recent entries |
-| `Habits_Habit_Writer.shortcut` | Appends a completion row to a habit's CSV |
+| `Habits_Habit_Writer.shortcut` | (TODO) Appends a completion row to a habit's CSV |
 
 These are the signed `.shortcut` exports straight from the Shortcuts app — the
 same files that import on an iPhone/iPad/Mac. They're self-contained and don't
