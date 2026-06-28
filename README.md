@@ -65,17 +65,17 @@ loudly rather than silently skipping sync.
 Anything reading or writing the data — a shortcut, a script, the CLI — must
 follow this. It's the single source of compatibility between platforms.
 
-**Layout.** One CSV file per habit, named `<habit>.csv`, inside `storage_dir`
+***Layout.*** One CSV file per habit, named `<habit>.csv`, inside `storage_dir`
 (default `~/.local/share/habits`, i.e. `$XDG_DATA_HOME/habits`; overridable in
 the rc file). Archived habits move to `<storage_dir>/.archive/<habit>.csv`.
 
-**Header.** The first line is always the header and is skipped on read:
+***Header.*** The first line is always the header and is skipped on read:
 
 ```
 date,count
 ```
 
-**Data rows.** One completion per line, appended in order:
+***Data rows.*** One completion per line, appended in order:
 
 ```
 2026-06-26 20:19,1
@@ -89,10 +89,10 @@ date,count
   be wrapped in double quotes per standard CSV rules (e.g. `"1,2,3"`), which is
   what Python's `csv` writer emits.
 
-**Encoding & endings.** UTF-8, Unix `\n` line endings, one trailing newline per
+***Encoding & endings.*** UTF-8, Unix `\n` line endings, one trailing newline per
 row. Blank lines are ignored on read.
 
-**Write semantics.** Logging a completion is a pure append — never rewrite or
+***Write semantics.*** Logging a completion is a pure append — never rewrite or
 sort the file. (The CLI de-duplicates by day only when computing stats; on disk
 every append is kept.) Creating a brand-new habit means creating the file with
 the `date,count` header line, then appending rows.
