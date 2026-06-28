@@ -13,7 +13,7 @@ cd habits
 make install
 ```
 
-## Usage
+## Features
 ```sh
 usage: habits [-h] [-c C | -n | -d | -r | -u | -l | -s | -a] [habit]
 
@@ -34,9 +34,11 @@ options:
 
 ## Configuration
 
-Configuration is optional. With no config file, habits stores data under
+Configuration is *optional*. With no config file, habits stores data under
 `$XDG_DATA_HOME/habits` (default `~/.local/share/habits`) and the Todoist
 integration stays off.
+
+### Config Files
 
 To change defaults, create `$XDG_CONFIG_HOME/habits/habitsrc` (default
 `~/.config/habits/habitsrc`). It's a plain `key = value` file — no section
@@ -56,6 +58,8 @@ api_token_file = ~/.local/state/habits/token
   not the token itself, so the secret can live outside a (possibly public)
   dotfiles repo. The file is just the raw token on one line:
 
+### Optional Todoist Integration
+
 Get your Todoist API token from Todoist -> Settings -> Integrations ->
 Developer -> API token. If `api_token_file` is set but unreadable, habits fails
 loudly rather than silently skipping sync.
@@ -64,18 +68,24 @@ loudly rather than silently skipping sync.
 
 Anything reading or writing the data — a shortcut, a script, the CLI — must
 follow this. It's the single source of compatibility between platforms.
+ 
+### Layout
 
-***Layout.*** One CSV file per habit, named `<habit>.csv`, inside `storage_dir`
+One CSV file per habit, named `<habit>.csv`, inside `storage_dir`
 (default `~/.local/share/habits`, i.e. `$XDG_DATA_HOME/habits`; overridable in
 the rc file). Archived habits move to `<storage_dir>/.archive/<habit>.csv`.
 
-***Header.*** The first line is always the header and is skipped on read:
+### Header
+
+The firs line is always the header and is skipped on read:
 
 ```
 date,count
 ```
 
-***Data rows.*** One completion per line, appended in order:
+### Data Rows
+
+One completion per line, appended in order:
 
 ```
 2026-06-26 20:19,1
@@ -89,10 +99,14 @@ date,count
   be wrapped in double quotes per standard CSV rules (e.g. `"1,2,3"`), which is
   what Python's `csv` writer emits.
 
-***Encoding & endings.*** UTF-8, Unix `\n` line endings, one trailing newline per
+### Encoding & Endings
+
+UTF-8, Unix `\n` line endings, one trailing newline per
 row. Blank lines are ignored on read.
 
-***Write semantics.*** Logging a completion is a pure append — never rewrite or
+### Write Semantics
+
+Logging a completion is a pure append — never rewrite or
 sort the file. (The CLI de-duplicates by day only when computing stats; on disk
 every append is kept.) Creating a brand-new habit means creating the file with
 the `date,count` header line, then appending rows.
